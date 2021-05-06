@@ -5,11 +5,13 @@
 #include "Book.h"
 #include "String.h"
 bool validatePassAndUsername(const char*);
-void Engine::Run()
+void Engine::Run() // used as a core for functionality
 {
+	//creating and setting up vectors. TODO:: input and output to a file
 	User currentUser;
 	Vector<User> vectorUsers;
 	Vector<Book> vectorBooks;
+
 	vectorUsers.pushBack(User("Admin", "i<3c++", true));
 	vectorUsers.pushBack(User("pepi", "123", false));
 	vectorUsers.pushBack(User("pepi2", "123", false));
@@ -19,17 +21,23 @@ void Engine::Run()
 	keywords.pushBack("metro");
 	keywords.pushBack("mutants");
 	keywords.pushBack("radiation");
-	vectorBooks.pushBack(Book("Dmitrii Glukhovski", "Metro 2033", "Distopia", "A tale about a man, fighting for his home", 2014, keywords, 10, "12345"));
+
+	vectorBooks.pushBack(Book("Dmitrii Glukhovski", "Metro 2033",
+		"Distopia", "A tale about a man, fighting for his home", 2014, keywords, 10, "12345"));
+	
 	keywords = Vector<String>();
 	keywords.pushBack("superpowers");
 	keywords.pushBack("fire");
 	keywords.pushBack("revenge");
-	vectorBooks.pushBack(Book("Stephen King", "Firestarter","Triller", "A story about a father, protecting his child", 1980, keywords,7,"23456" ));
+
+	vectorBooks.pushBack(Book("Stephen King", "Firestarter","Triller",
+		"A story about a father, protecting his child", 1980, keywords,7,"23456" ));
+
 	char* command = new char[30];
 	std::cout << "Enter command:";
 	std::cin.getline(command, 30);
 	int incorrectLogins = 0;
-	while (strcmp(command,"exit") != 0)
+	while (strcmp(command,"exit") != 0) // main menu
 	{
 		//users add
 		if (strcmp(command, "users add") == 0 && currentUser.get_auth() == true)
@@ -383,7 +391,8 @@ void Engine::Run()
 	delete[] command;
 }
 
-bool validatePassAndUsername(const char* str)
+// a method used to check if a password or username is chosen according to the security policy
+bool validatePassAndUsername(const char* str) 
 {
 	int specialCnt = 0;
 	int capitalCnt = 0;
