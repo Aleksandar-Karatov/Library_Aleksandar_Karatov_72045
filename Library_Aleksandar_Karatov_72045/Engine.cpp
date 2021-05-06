@@ -10,10 +10,10 @@ void Engine::Run()
 	User currentUser;
 	Vector<User> vectorUsers;
 	Vector<Book> vectorBooks;
-	vectorUsers.pushBack(User("Admin", "123", true));
-	vectorUsers.pushBack(User("pepi", "i<3c++", false));
-	vectorUsers.pushBack(User("pepi2", "i<3c++", false));
-	vectorUsers.pushBack(User("pepi3", "i<3c++", false));
+	vectorUsers.pushBack(User("Admin", "i<3c++", true));
+	vectorUsers.pushBack(User("pepi", "123", false));
+	vectorUsers.pushBack(User("pepi2", "123", false));
+	vectorUsers.pushBack(User("pepi3", "123", false));
 
 	Vector<String> keywords;
 	keywords.pushBack("metro");
@@ -117,8 +117,8 @@ void Engine::Run()
 		}
 
 
-		//show users
-		else if (strcmp(command, "show users") == 0 && currentUser.get_auth() == true)
+		//users all
+		else if (strcmp(command, "users all") == 0 && currentUser.get_auth() == true)
 		{
 			for (size_t i = 0; i < vectorUsers.getSize(); i++)
 			{
@@ -385,6 +385,10 @@ void Engine::Run()
 
 bool validatePassAndUsername(const char* str)
 {
+	int specialCnt = 0;
+	int capitalCnt = 0;
+	int numberCnt = 0;
+	int smallLetterCnt = 0;
 	if (strlen(str) < 8)
 	{
 		std::cout << "Input shorter than 8 symbols" << std::endl;
@@ -392,12 +396,35 @@ bool validatePassAndUsername(const char* str)
 	}
 	for (size_t i = 0; i < strlen(str); i++)
 	{
-		if ((str[i] < '0' || str[i] > '9') && str[i] != '!' && str[i] != '_' && str[i] !='-' && str[i] != '.' && (str[i] < '@' 
-			|| str[i]> 'Z') && str[i] != '$' && str[i] != '%' && str[i] != '&' && str[i] != '*' && (str[i] < 'a' || str[i] > 'z')
-			&& str[i] != '<' && str[i] != '>' && str[i] != '+')
+		if (str[i] >= '0' && str[i] <= '9')
 		{
+			numberCnt++;
+		}
+		else if (str[i] == '!' || str[i] == '_' || str[i] == '-' || str[i] == '.' ||
+				 str[i] == '@' || str[i] == '$' || str[i] == '%' || str[i] == '&' || 
+				 str[i] == '*' || str[i] == '<' || str[i] == '>' || str[i] == '+')
+		{
+			specialCnt++;
+		}
+		else if (str[i] >= 'a' && str[i] <= 'z')
+		{
+			smallLetterCnt++;
+		}
+		else if (str[i] >= 'A' && str[i] <= 'Z')
+		{
+			capitalCnt++;
+		}
+		else
+		{
+			std::cout << "Invalid symbol : " << str[i] << std::endl;
 			return false;
 		}
 	}
+	if (numberCnt == 0 || capitalCnt == 0 || smallLetterCnt == 0 || specialCnt == 0)
+	{
+		std::cout << "Input has to contain at least one capital letter, one small letter, one special symbol and one number!" << std::endl;
+		return false;
+	}
 	return true;
 }
+
