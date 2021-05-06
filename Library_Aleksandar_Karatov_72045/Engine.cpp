@@ -4,7 +4,7 @@
 #include <iostream>
 #include "Book.h"
 #include "String.h"
-bool validateString(const char*);
+bool validatePassAndUsername(const char*);
 void Engine::Run()
 {
 	User currentUser;
@@ -28,6 +28,7 @@ void Engine::Run()
 	char* command = new char[30];
 	std::cout << "Enter command:";
 	std::cin.getline(command, 30);
+	int incorrectLogins = 0;
 	while (strcmp(command,"exit") != 0)
 	{
 		//users add
@@ -36,22 +37,22 @@ void Engine::Run()
 			User temp;
 			std::cout << "Enter username (special symbols allowed: ! _ - . @ $ % & * < > +):";
 			std::cin.getline(command, 30);
-			bool isStrValid = validateString(command);
+			bool isStrValid = validatePassAndUsername(command);
 			while (!isStrValid)
 			{
 				std::cout << "Enter a valid username (special symbols allowed: ! _ - . @ $ % & * < > +):";
 				std::cin.getline(command, 30);
-				isStrValid = validateString(command);
+				isStrValid = validatePassAndUsername(command);
 			}
 			temp.set_username(command);
 			std::cout << "Enter password (special symbols allowed: ! _ - . @ $ % & * < > +):";
 			std::cin.getline(command, 30);
-			isStrValid = validateString(command);
+			isStrValid = validatePassAndUsername(command);
 			while (!isStrValid)
 			{
 				std::cout << "Enter a valid password (special symbols allowed: ! _ - . @ $ % & * < > +):";
 				std::cin.getline(command, 30);
-				isStrValid = validateString(command);
+				isStrValid = validatePassAndUsername(command);
 			}
 			temp.set_password(command);
 			std::cout << "Enter authorization: admin or user: ";
@@ -81,6 +82,8 @@ void Engine::Run()
 		{
 			std::cout << "You are unauthorized to create users!" << std::endl;
 		}
+
+
 		//users remove
 		else if (strcmp(command, "users remove") == 0 && currentUser.get_auth() == true)
 		{
@@ -112,6 +115,8 @@ void Engine::Run()
 		{
 			std::cout << "You are unauthorized to remove users!" << std::endl;
 		}
+
+
 		//show users
 		else if (strcmp(command, "show users") == 0 && currentUser.get_auth() == true)
 		{
@@ -132,6 +137,8 @@ void Engine::Run()
 		{
 			std::cout << "You are unauthorized to view users!" << std::endl;
 		}
+
+
 		//login
 		else if (strcmp(command, "login") == 0 && currentUser.get_username()==nullptr)
 		{
@@ -147,18 +154,27 @@ void Engine::Run()
 				{
 					currentUser = vectorUsers[i];
 					std::cout << "Welcome, " << currentUser.get_username() << "!" << std::endl;
+					incorrectLogins = 0;
 					break;
 				}
 			}
 			if (currentUser.get_username() == nullptr)
 			{
+				incorrectLogins++;
 				std::cout << "Incorrect login details!" << std::endl;
+			}
+			if (incorrectLogins > 2)
+			{
+				std::cout << "Three incorrect logins! Exiting..." << std::endl;;
+				break;
 			}
 		}
 		else if (strcmp(command, "login") == 0 && currentUser.get_username() != nullptr)
 		{
 			std::cout << "You are currently logged in!" << std::endl;
 		}
+
+
 		//logout
 		else if (strcmp(command, "logout") == 0 && currentUser.get_username() != nullptr)
 		{
@@ -170,6 +186,8 @@ void Engine::Run()
 		{
 			std::cout << "Action impossible! You are not logged in" << std::endl;
 		}
+
+
 		//books all
 		else if (strcmp(command, "books all") == 0 && currentUser.get_username() != nullptr)
 		{
@@ -182,6 +200,8 @@ void Engine::Run()
 		{
 			std::cout << "You need to login to see the books in the library!" << std::endl;
 		}
+
+
 		//books info <isbn>
 		else if (strcmp(command, "books info") == 0 && currentUser.get_username() != nullptr)
 		{
@@ -206,6 +226,8 @@ void Engine::Run()
 		{
 			std::cout << "You need to login to see the books in the library!" << std::endl;
 		}
+
+
 		//books find
 		if (strcmp(command, "books find") == 0 && currentUser.get_username() != nullptr)
 		{
@@ -265,6 +287,8 @@ void Engine::Run()
 		{
 			std::cout << "You need to login to see the books in the library!" << std::endl;
 		}
+
+
 		// books add
 		if (strcmp(command, "books add") == 0 && currentUser.get_auth() == true)
 		{
@@ -317,6 +341,8 @@ void Engine::Run()
 		{
 			std::cout << "You are unauthorized to add books!" << std::endl;
 		}
+
+
 		//books remove
 		else if (strcmp(command, "books remove") == 0 && currentUser.get_auth() == true)
 		{
@@ -350,7 +376,6 @@ void Engine::Run()
 		}
 
 
-
 		std::cout << "Enter new command:";
 		std::cin.getline(command, 30);
 	}
@@ -358,8 +383,13 @@ void Engine::Run()
 	delete[] command;
 }
 
-bool validateString(const char* str)
+bool validatePassAndUsername(const char* str)
 {
+	if (strlen(str) < 8)
+	{
+		std::cout << "Input shorter than 8 symbols" << std::endl;
+		return false;
+	}
 	for (size_t i = 0; i < strlen(str); i++)
 	{
 		if ((str[i] < '0' || str[i] > '9') && str[i] != '!' && str[i] != '_' && str[i] !='-' && str[i] != '.' && (str[i] < '@' 
