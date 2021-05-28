@@ -5,6 +5,7 @@
 #include "Book.h"
 #include "String.h"
 bool validatePassAndUsername(const char*);
+char* trimEmptySpaces(char*);
 void Engine::Run() // used as a core for functionality
 {
 	//creating and setting up vectors. TODO:: input and output to a file
@@ -21,6 +22,7 @@ void Engine::Run() // used as a core for functionality
 	keywords.pushBack("metro");
 	keywords.pushBack("mutants");
 	keywords.pushBack("radiation");
+	keywords.pushBack("revenge");
 
 	vectorBooks.pushBack(Book("Dmitrii Glukhovski", "Metro 2033",
 		"Distopia", "A tale about a man, fighting for his home", 2014, keywords, 10, "12345"));
@@ -36,6 +38,7 @@ void Engine::Run() // used as a core for functionality
 	char* command = new char[30];
 	std::cout << "Enter command:";
 	std::cin.getline(command, 30);
+	command = trimEmptySpaces(command);
 	int incorrectLogins = 0;
 	while (strcmp(command,"exit") != 0) // main menu
 	{
@@ -65,6 +68,7 @@ void Engine::Run() // used as a core for functionality
 			temp.set_password(command);
 			std::cout << "Enter authorization: admin or user: ";
 			std::cin.getline(command, 30);
+			command = trimEmptySpaces(command);
 			while (strcmp(command, "admin") != 0 && strcmp(command, "user") != 0 && strcmp(command, "") != 0)
 			{
 				std::cout << "Enter a valid authorization value: admin or user: ";
@@ -80,6 +84,7 @@ void Engine::Run() // used as a core for functionality
 			}
 			std::cout << temp.get_username() << " | " << temp.get_auth() << std::endl << "Save changes? [y/n]";
 			std::cin.getline(command, 30);
+			command = trimEmptySpaces(command);
 			if (strcmp(command, "y") == 0 || strcmp(command, "Y") == 0 || strcmp(command, "yes") == 0)
 			{
 				vectorUsers.pushBack(temp);
@@ -97,6 +102,7 @@ void Engine::Run() // used as a core for functionality
 		{
 			std::cout << "Enter username of the user you want to delete:";
 			std::cin.getline(command,30);
+			command = trimEmptySpaces(command);
 			size_t size = vectorUsers.getSize();
 			for (size_t i = 0; i < size; i++)
 			{
@@ -104,6 +110,7 @@ void Engine::Run() // used as a core for functionality
 				{
 					std::cout << "Are you sure you want to delete " << command << "? [y/n]: ";
 					std::cin.getline(command, 30);
+					command = trimEmptySpaces(command);
 					if (strcmp(command, "y") == 0 || strcmp(command, "Y") == 0 || strcmp(command, "yes") == 0)
 					{
 						vectorUsers.deleteAtIndex(i);
@@ -141,7 +148,7 @@ void Engine::Run() // used as a core for functionality
 				}
 			}
 		}
-		else if (strcmp(command, "show users") == 0 && currentUser.get_auth() == false)
+		else if (strcmp(command, "users all") == 0 && currentUser.get_auth() == false)
 		{
 			std::cout << "You are unauthorized to view users!" << std::endl;
 		}
@@ -215,6 +222,7 @@ void Engine::Run() // used as a core for functionality
 		{
 			std::cout << "Enter ISBN: ";
 			std::cin.getline(command,30);
+			command = trimEmptySpaces(command);
 			bool isFound = false;
 			for (size_t i = 0; i < vectorBooks.getSize(); i++)
 			{
@@ -241,11 +249,13 @@ void Engine::Run() // used as a core for functionality
 		{
 			std::cout << "Enter option [title, author, tag]: ";
 			std::cin.getline(command, 30);
+			command = trimEmptySpaces(command);
 			bool isFound = false;
 			if (strcmp(command, "title") == 0)
 			{
 				std::cout << "Enter title: ";
 				std::cin.getline(command, 30);
+				command = trimEmptySpaces(command);
 				for (size_t i = 0; i < vectorBooks.getSize(); i++)
 				{
 					if (strcmp(command, vectorBooks[i].get_title()) == 0)
@@ -260,6 +270,7 @@ void Engine::Run() // used as a core for functionality
 			{
 				std::cout << "Enter author: ";
 				std::cin.getline(command, 30);
+				command = trimEmptySpaces(command);
 				for (size_t i = 0; i < vectorBooks.getSize(); i++)
 				{
 					if (strcmp(command, vectorBooks[i].get_author()) == 0)
@@ -273,6 +284,7 @@ void Engine::Run() // used as a core for functionality
 			{
 				std::cout << "Enter tag: ";
 				std::cin.getline(command, 30);
+				command = trimEmptySpaces(command);
 				String tag = command;
 				for (size_t i = 0; i < vectorBooks.getSize(); i++)
 				{
@@ -303,21 +315,26 @@ void Engine::Run() // used as a core for functionality
 			Book temp;
 			std::cout << "Enter title:";
 			std::cin.getline(command, 30);
+			command = trimEmptySpaces(command);
 			temp.set_title(command);
 			std::cout << "Enter author:";
 			std::cin.getline(command, 30);
+			command = trimEmptySpaces(command);
 			temp.set_author(command);
 			std::cout << "Enter genre:";
 			std::cin.getline(command, 30);
+			command = trimEmptySpaces(command);
 			temp.set_genre(command);
 			std::cout << "Enter description:";
 			char* description = new char[100];
 			std::cin.getline(description, 100);
+			command = trimEmptySpaces(description);
 			temp.set_description(description);
 			delete[] description;
 			description = nullptr;
 			std::cout << "Enter ISBN:";
 			std::cin.getline(command, 30);
+			command = trimEmptySpaces(command);
 			temp.set_isbn(command);
 			double rating;
 			std::cout << "Enter rating:";
@@ -331,15 +348,18 @@ void Engine::Run() // used as a core for functionality
 			std::cin.sync();
 			std::cin.ignore();
 			std::cin.getline(command,30);
+			command = trimEmptySpaces(command);
 			Vector<String> tempTags;
 			for (size_t i = 0; strcmp(command, "") != 0; i++)
 			{
 				tempTags.pushBack(command);
 				std::cin.getline(command, 30);
+				command = trimEmptySpaces(command);
 			}
 			temp.set_keywords(tempTags);
 			std::cout << "Save changes [y/n]: ";
 			std::cin.getline(command, 30);
+			command = trimEmptySpaces(command);
 			if ((strcmp(command,"y")==0) || (strcmp(command, "Y") == 0) || (strcmp(command, "yes") == 0))
 			{
 				vectorBooks.pushBack(temp);
@@ -356,6 +376,7 @@ void Engine::Run() // used as a core for functionality
 		{
 			std::cout << "Enter the title of the book you want to delete:";
 			std::cin.getline(command, 30);
+			command = trimEmptySpaces(command);
 			size_t size = vectorBooks.getSize();
 			for (size_t i = 0; i < size; i++)
 			{
@@ -363,6 +384,7 @@ void Engine::Run() // used as a core for functionality
 				{
 					std::cout << "Are you sure you want to delete " << command << "? [y/n]: ";
 					std::cin.getline(command, 30);
+					command = trimEmptySpaces(command);
 					if (strcmp(command, "y") == 0 || strcmp(command, "Y") == 0 || strcmp(command, "yes") == 0)
 					{
 						vectorBooks.deleteAtIndex(i);
@@ -386,6 +408,7 @@ void Engine::Run() // used as a core for functionality
 
 		std::cout << "Enter new command:";
 		std::cin.getline(command, 30);
+		command = trimEmptySpaces(command);
 	}
 	std::cout << "Exiting.... Have a great day!";
 	delete[] command;
@@ -435,5 +458,23 @@ bool validatePassAndUsername(const char* str)
 		return false;
 	}
 	return true;
+}
+
+char* trimEmptySpaces(char* input)
+{
+	while (input[0] == ' ' )
+	{
+		for (size_t i = 0; i < strlen(input) -1; i++)
+		{
+			input[i] = input[i + 1];
+			
+		}
+		input[strlen(input) - 1] = '\0';
+	}
+	while (input[strlen(input) - 1] == ' ' || input[strlen(input) - 1] == 9)
+	{
+		input[strlen(input) - 1] = '\0';
+	}
+	return input;
 }
 

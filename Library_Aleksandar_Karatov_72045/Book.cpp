@@ -162,7 +162,6 @@ void Book::copy(const Book& other)
 {
 	if (this != &other)
 	{
-		
 		set_author(other.author);
 		set_genre(other.genre);
 		set_isbn(other.isbn);
