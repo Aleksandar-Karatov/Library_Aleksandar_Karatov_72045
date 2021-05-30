@@ -48,6 +48,17 @@ int String::get_len() const
 {
 	return strlen(str);
 }
+const String String::toLower()
+{
+	for (size_t i = 0; i < get_len(); i++)
+	{
+		if (str[i]>='A' && str[i]<='Z')
+		{
+			str[i] += 32;
+		}
+	}
+	return *this;
+}
 String& String:: operator=(const String& other)
 {
 	if (this != &other)
@@ -56,7 +67,14 @@ String& String:: operator=(const String& other)
 	}
 	return *this;
 }
-
+String String:: operator+(const String& other) const
+{
+	char* buffer = new char[strlen(str) + strlen(other.str) + 1];
+	strcpy_s(buffer, strlen(str) + strlen(other.str) + 1, str);
+	strcat_s(buffer, strlen(str) + strlen(other.str) + 1, other.str);
+	String result = buffer;
+	return result;
+}
 bool String:: operator==(const String& other) const
 {
 	return strcmp(str, other.str) == 0;
@@ -85,12 +103,10 @@ std::ostream& operator<<(std::ostream& output, const String& object) {
 
 std::istream& operator>>(std::istream& input, String& object) {
 
-	char* buffer = new char[50];
+	char* buffer = new char[100];
 	input >> buffer;
 	object = String(buffer);
 	delete[] buffer;
 
 	return input;
 }
-
-

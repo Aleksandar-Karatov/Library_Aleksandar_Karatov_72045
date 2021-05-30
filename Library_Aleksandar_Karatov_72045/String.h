@@ -21,7 +21,9 @@ public:
     const char* get_str() const;
     const bool isEmpty() const;
     int get_len() const;
+    const String toLower();
     String& operator=(const String&);
+    String operator+(const String&) const;
     bool operator==(const String&) const;
     bool operator!=(const String&) const;
     char& operator[](const int i) const;
