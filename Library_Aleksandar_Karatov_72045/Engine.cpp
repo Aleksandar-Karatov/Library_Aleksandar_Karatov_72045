@@ -4,15 +4,17 @@
 #include <iostream>
 #include "Book.h"
 #include "String.h"
+#include <fstream>
 bool validatePassAndUsername(const char*);
 char* trimEmptySpaces(char*);
+Vector<String> splitCommand(char*);
 void Engine::Run() // used as a core for functionality
 {
 	//creating and setting up vectors. TODO:: input and output to a file
 	User currentUser;
 	Vector<User> vectorUsers;
 	Vector<Book> vectorBooks;
-
+	
 	vectorUsers.pushBack(User("Admin", "i<3c++", true));
 	vectorUsers.pushBack(User("pepi", "123", false));
 	vectorUsers.pushBack(User("pepi2", "123", false));
@@ -34,12 +36,14 @@ void Engine::Run() // used as a core for functionality
 
 	vectorBooks.pushBack(Book("Stephen King", "Firestarter","Triller",
 		"A story about a father, protecting his child", 1980, keywords,7,"23456" ));
-
+	
 	char* command = new char[30];
 	std::cout << "Enter command:";
 	std::cin.getline(command, 30);
 	command = trimEmptySpaces(command);
+	
 	int incorrectLogins = 0;
+	
 	while (strcmp(command,"exit") != 0) // main menu
 	{
 		//users add
@@ -404,7 +408,12 @@ void Engine::Run() // used as a core for functionality
 		{
 			std::cout << "You are unauthorized to remove books!" << std::endl;
 		}
+		
+		//file work
+		else if (strcmp(command, "books remove") == 0)
+		{
 
+		}
 
 		std::cout << "Enter new command:";
 		std::cin.getline(command, 30);
@@ -457,6 +466,7 @@ bool validatePassAndUsername(const char* str)
 		std::cout << "Input has to contain at least one capital letter, one small letter, one special symbol and one number!" << std::endl;
 		return false;
 	}
+
 	return true;
 }
 
@@ -475,6 +485,32 @@ char* trimEmptySpaces(char* input)
 	{
 		input[strlen(input) - 1] = '\0';
 	}
+	input[strlen(input)] = '\0';
 	return input;
 }
 
+Vector<String> splitCommand(char* command)
+{
+	Vector<String> splitCommand;
+	
+	char* word = new char[30];
+	size_t j = 0;
+	for (size_t i = 0; i <= strlen(command); i++)
+	{
+		if (command[i] == ' ' || command[i] == '\0')
+		{
+			word[j] = '\0';
+			splitCommand.pushBack(word);
+			word = new char[30];
+			j = 0;
+		}
+		else 
+		{
+			word[j] = command[i];
+			j++;
+		}
+		
+	}
+	return splitCommand;
+	
+}
