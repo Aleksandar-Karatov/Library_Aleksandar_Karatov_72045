@@ -5,6 +5,7 @@
 #include "Book.h"
 #include "String.h"
 #include <fstream>
+#include <ctime>
 bool validatePassAndUsername(const char*);
 char* trimEmptySpaces(char*);
 Vector<String> splitCommand(char*);
@@ -387,14 +388,37 @@ void Engine::Run() // used as a core for functionality
 				std::cout << "Enter ISBN:";
 				std::cin.getline(command, 30);
 				command = trimEmptySpaces(command);
+				for (size_t i = 0; i < vectorBooks.getSize(); i++)
+				{
+					if (strcmp(command, vectorBooks[i].get_isbn()) == 0)
+					{
+						std::cout << "ISBN is taken! Chose another: ";
+						std::cin.getline(command, 30);
+						command = trimEmptySpaces(command);
+						i = -1;
+					}
+				}
 				temp.set_isbn(command);
+				
 				double rating;
 				std::cout << "Enter rating:";
 				std::cin >> rating;
+				while (rating > 10 || rating < 0)
+				{
+					std::cout << "Enter a rating between 0 and 10:";
+					std::cin >> rating;
+				}
 				temp.set_rating(rating);
 				int yearofPublish;
 				std::cout << "Enter year of publishing:";
 				std::cin >> yearofPublish;
+				time_t t = time(NULL);
+				tm* timePtr = localtime(&t);
+				while (yearofPublish > timePtr->tm_year + 1900)
+				{
+					std::cout << "Enter a valid year of publishing (before or equal to " << timePtr->tm_year + 1900 << "): ";
+					std::cin >> yearofPublish;
+				}
 				temp.set_yearOfPublishing(yearofPublish);
 				std::cout << "Enter keywords (reads until empty line):";
 				std::cin.sync();
