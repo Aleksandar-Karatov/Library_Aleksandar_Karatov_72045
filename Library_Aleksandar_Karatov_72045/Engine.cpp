@@ -11,33 +11,33 @@ char* trimEmptySpaces(char*);
 Vector<String> splitCommand(char*);
 void Engine::Run() // used as a core for functionality
 {
-	String test = "AsBqwe AwesfzxAE";
 	//creating and setting up vectors. TODO:: input and output to a file
 	User currentUser;
 	Vector<User> vectorUsers;
 	Vector<Book> vectorBooks;
 	Vector<String> commandInStrings;
+	String fileName;
 	vectorUsers.pushBack(User("Admin", "i<3c++", true));
 	vectorUsers.pushBack(User("pepi", "123", false));
 	vectorUsers.pushBack(User("pepi2", "123", false));
 	vectorUsers.pushBack(User("pepi3", "123", false));
 
-	Vector<String> keywords;
-	keywords.pushBack("metro");
-	keywords.pushBack("mutants");
-	keywords.pushBack("radiation");
-	keywords.pushBack("revenge");
+	//Vector<String> keywords;
+	//keywords.pushBack("metro");
+	//keywords.pushBack("mutants");
+	//keywords.pushBack("radiation");
+	//keywords.pushBack("revenge");
 
-	vectorBooks.pushBack(Book("Dmitrii Glukhovski", "Metro 2033",
-		"Distopia", "A tale about a man, fighting for his home", 2014, keywords, 10, "12345"));
+	//vectorBooks.pushBack(Book("Dmitrii Glukhovski", "Metro 2033",
+	//	"Distopia", "A tale about a man, fighting for his home", 2014, keywords, 10, "12345"));
 	
-	keywords = Vector<String>();
-	keywords.pushBack("superpowers");
-	keywords.pushBack("fire");
-	keywords.pushBack("revenge");
+	//keywords = Vector<String>();
+	//keywords.pushBack("superpowers");
+	//keywords.pushBack("fire");
+	//keywords.pushBack("revenge");
 
-	vectorBooks.pushBack(Book("Stephen King", "Firestarter","Triller",
-		"A story about a father, protecting his child", 1980, keywords,7,"23456" ));
+	//vectorBooks.pushBack(Book("Stephen King", "Firestarter","Triller",
+	//	"A story about a father, protecting his child", 1980, keywords,7,"23456" ));
 	
 	char* command = new char[100];
 	std::cout << "Enter command:";
@@ -507,7 +507,93 @@ void Engine::Run() // used as a core for functionality
 			}
 
 		}
-		
+		// file commands
+		else if (commandInStrings[0].toLower() == "open" && commandInStrings.getSize() == 2 && fileName.isEmpty())
+		{
+			char* buffer = new char[10000];
+			fileName = commandInStrings[1];
+			std::ifstream input(commandInStrings[1].get_str());
+			while (input.getline(buffer,10000))
+			{
+				Book temp;
+				temp.setFromFile(buffer);
+				vectorBooks.pushBack(temp);
+			}
+			delete[] buffer;
+			input.close();
+		}
+		else if (commandInStrings[0].toLower() == "open" && commandInStrings.getSize() != 2)
+		{
+			std::cout << "Invalid command! Try using -help!" << std::endl;
+		}
+		else if (commandInStrings[0].toLower() == "open" && !fileName.isEmpty())
+		{
+			std::cout << "File already openned!" << std::endl;
+		}
+		else if (commandInStrings[0].toLower() == "save" && commandInStrings.getSize() == 1)
+		{
+			std::ofstream output_file;
+			output_file.open(fileName.get_str(), std::ofstream::out | std::ofstream::trunc);;
+
+			for (size_t i = 0; i < vectorBooks.getSize(); i++)
+			{
+				output_file << vectorBooks[i] << std::endl;
+			}
+			std::cout << "File is now saved!" << std::endl;
+			output_file.close();
+		}
+		else if (commandInStrings[0].toLower() == "save" && commandInStrings.getSize() != 1)
+		{
+			std::cout << "Invalid command! Try using -help!" << std::endl;
+		}
+
+
+		else if (commandInStrings[0].toLower() == "saveas" && commandInStrings.getSize() == 2)
+		{
+		std::ofstream output_file;
+		output_file.open(commandInStrings[1].get_str(), std::fstream::in | std::fstream::out | std::fstream::app);
+		for (size_t i = 0; i < vectorBooks.getSize(); i++)
+		{
+			output_file << vectorBooks[i] << std::endl;
+		}
+
+		output_file.close();
+		std::cout << "Saved successfully to file!" << std::endl;
+
+		}
+		else if (commandInStrings[0].toLower() == "saveas" && commandInStrings.getSize() != 2)
+		{
+			std::cout << "Invalid command! Try using -help!" << std::endl;
+		}
+		else if (commandInStrings[0].toLower() == "close" && commandInStrings.getSize() == 1 && !fileName.isEmpty())
+		{
+			fileName.~String();
+			for (size_t i = 0; i < vectorBooks.getSize(); i++)
+			{
+				vectorBooks[i].~Book();
+			}
+			vectorBooks = Vector<Book>();
+			std::cout << "File is now closed!" << std::endl;
+
+		}
+		else if (commandInStrings[0].toLower() == "close" && commandInStrings.getSize() != 1)
+		{
+			std::cout << "Invalid command! Try using -help!" << std::endl;
+		}
+		else if (commandInStrings[0].toLower() == "close" && fileName.isEmpty())
+		{
+			std::cout << "No file has been opened!" << std::endl;
+		}
+		else if (commandInStrings[0].toLower() == "help" && fileName.isEmpty())
+		{
+			std::cout << "The following commands are supported:" << std::endl <<
+				"open <file>	opens <file>" << std::endl <<
+				"close			closes currently opened file" << std::endl <<
+				"save			saves the currently open file" << std::endl <<
+				"saveas <file>	saves the currently open file in <file>" << std::endl <<
+				"help			prints this information" << std::endl <<
+				"exit			exists the program" << std::endl;
+		}
 		std::cout << "Enter new command:";
 		std::cin.getline(command, 100);
 		command = trimEmptySpaces(command);

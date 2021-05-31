@@ -1,5 +1,5 @@
 #include "Book.h"
-
+#include<fstream>
 
 Book::Book()
 {
@@ -189,6 +189,217 @@ void Book::destroy()
 	yearOfPublishing = 0;
 
 }
+char* spaceToEqualSign(char* input)
+{
+	for (size_t i = 0; i < strlen(input); i++)
+	{
+		if (input[i] == ' ')
+		{
+			input[i] = '=';
+		}
+	}
+	return input;
+}
+
+char* equalSignToSpace(char* input)
+{
+	for (size_t i = 0; i < strlen(input); i++)
+	{
+		if (input[i] == '=')
+		{
+			input[i] = ' ';
+		}
+	}
+	return input;
+}
+std::ofstream& operator<<(std::ofstream& output, const Book& object)
+{
+	output << spaceToEqualSign(object.author) << ";" <<
+			spaceToEqualSign(object.title) << ";" << 
+			spaceToEqualSign(object.genre) << ";" <<
+			spaceToEqualSign(object.description) << ";" <<
+			object.yearOfPublishing <<";" << object.rating << ";"<< object.isbn << ";";
+	String tempKeyword;
+	for (size_t i = 0; i < object.keywords.getSize() ; i++)
+	{
+		tempKeyword = object.keywords[i];
+		for (size_t j = 0; j < tempKeyword.get_len(); j++)
+		{
+			if (tempKeyword[j] == ' ')
+			{
+				tempKeyword[j] = '=';
+			}
+		}
+		output << tempKeyword << "|";
+	}
+
+	return output;
+}
+void Book:: setFromFile(char* input)
+{
+	String buffer;
+	
+	buffer = input;
+	for (size_t i = 0; i < buffer.get_len(); i++)
+	{
+		char* temp = new char[100];
+		for (size_t j = 0; buffer[i]!= ';' ; j++)
+		{
+			temp[j] = buffer[i];
+			i++;
+			if (buffer[i] == ';')
+			{
+				temp[j + 1] = '\0';
+				break;
+			}
+		}
+		i++;
+		set_author(equalSignToSpace(temp));
+
+		delete[] temp;
+		temp = new char[100];
+		for (size_t j = 0; buffer[i] != ';'; j++)
+		{
+			temp[j] = buffer[i];
+			i ++;
+			if (buffer[i] == ';')
+			{
+				temp[j + 1] = '\0';
+				break;
+			}
+		}
+		i++;
+		set_title(equalSignToSpace(temp));
+
+		delete[] temp;
+		temp = new char[100];
+		for (size_t j = 0; buffer[i] != ';'; j++)
+		{
+			temp[j] = buffer[i];
+			i ++;
+			if (buffer[i] == ';')
+			{
+				temp[j + 1] = '\0';
+				break;
+			}
+		}
+		i++;
+		set_genre(equalSignToSpace(temp));
+
+		delete[] temp;
+		temp = new char[100];
+		for (size_t j = 0; buffer[i] != ';'; j++)
+		{
+			temp[j] = buffer[i];
+			i ++;
+			if (buffer[i] == ';')
+			{
+				temp[j + 1] = '\0';
+				break;
+			}
+		}
+		i++;
+		set_description(equalSignToSpace(temp));
+
+		delete[] temp;
+		temp = new char[100];
+		int intTemp = 0;
+		for (size_t j = 0; buffer[i] != ';'; j++)
+		{
+			temp[j] = buffer[i];
+			i++;
+			if (buffer[i] == ';')
+			{
+				temp[j + 1] = '\0';
+				break;
+			}
+		}
+
+		for (size_t j = 0; j < strlen(temp) ; j++)
+		{
+			if (j == 0 && temp[j] == '-')
+			{
+				intTemp = - (temp[j + 1] - '0' );
+				j++;
+ 			}
+			else if (temp[0] == '-')
+			{
+				intTemp = intTemp * 10 - (temp[j] - '0');
+			}
+			else
+			{
+				intTemp = intTemp * 10 + (temp[j] - '0');
+			}
+		}
+		set_yearOfPublishing(intTemp);
+
+		i++;
+		delete[] temp;
+		temp = new char[100];
+		intTemp = 0;
+		for (size_t j = 0; buffer[i] != ';'; j++)
+		{
+			temp[j] = buffer[i];
+			i++;
+			if (buffer[i] == ';')
+			{
+				temp[j + 1] = '\0';
+				break;
+			}
+		}
+
+		for (size_t j = 0; j < strlen(temp); j++)
+		{
+			intTemp = intTemp * 10 + (temp[j] - '0');
+		}
+		set_rating(intTemp);
+		i++;
+		delete[] temp;
+		temp = new char[100];
+
+		for (size_t j = 0; buffer[i] != ';'; j++)
+		{
+			temp[j] = buffer[i];
+			i ++;
+			if (buffer[i] == ';')
+			{
+				temp[j + 1] = '\0';
+				break;
+			}
+		}
+		i++;
+		set_isbn(temp);
+		delete[] temp;
+		temp = new char[100];
+		Vector<String> tempKeys;
+		for (size_t k = i; k < buffer.get_len() ;k++)
+		{
+			for (size_t j = 0; buffer[k] != '|'; j++)
+			{
+				temp[j] = buffer[k];
+				k++;
+				if (buffer[k] == '|')
+				{
+					temp[j + 1] = '\0';
+					break;
+				}
+			}
+			
+			tempKeys.pushBack(equalSignToSpace(temp));
+			delete[] temp;
+			temp = new char[100];
+			i = k;
+		}
+		set_keywords(tempKeys);
+		
+
+
+	}
+
+}
+
+
+
 
 Book::~Book()
 {

@@ -29,6 +29,8 @@ public:
 	bool operator!=(const Book&);
 	Book& operator= (const Book&);
 	friend std::ostream& operator<<(std::ostream&, const Book&);
+	friend std::ofstream& operator<<(std::ofstream&, const Book&);
+	void setFromFile(char* input);
 	~Book();
 
 private:
