@@ -1,44 +1,7 @@
 #include "Engine.h"
-#include "Vector.h"
-#include "User.h"
-#include <iostream>
-#include "Book.h"
-#include "String.h"
-#include <fstream>
-#include <ctime>
-bool validatePassAndUsername(const char*);
-char* trimEmptySpaces(char*);
-Vector<String> splitCommand(char*);
+
 void Engine::Run() // used as a core for functionality
 {
-	//creating and setting up vectors. TODO:: input and output to a file
-	User currentUser;
-	Vector<User> vectorUsers;
-	Vector<Book> vectorBooks;
-	Vector<String> commandInStrings;
-	String fileName;
-	vectorUsers.pushBack(User("Admin", "i<3c++", true));
-	vectorUsers.pushBack(User("pepi", "123", false));
-	vectorUsers.pushBack(User("pepi2", "123", false));
-	vectorUsers.pushBack(User("pepi3", "123", false));
-
-	//Vector<String> keywords;
-	//keywords.pushBack("metro");
-	//keywords.pushBack("mutants");
-	//keywords.pushBack("radiation");
-	//keywords.pushBack("revenge");
-
-	//vectorBooks.pushBack(Book("Dmitrii Glukhovski", "Metro 2033",
-	//	"Distopia", "A tale about a man, fighting for his home", 2014, keywords, 10, "12345"));
-	
-	//keywords = Vector<String>();
-	//keywords.pushBack("superpowers");
-	//keywords.pushBack("fire");
-	//keywords.pushBack("revenge");
-
-	//vectorBooks.pushBack(Book("Stephen King", "Firestarter","Triller",
-	//	"A story about a father, protecting his child", 1980, keywords,7,"23456" ));
-	
 	char* command = new char[100];
 	std::cout << "Enter command:";
 	std::cin.getline(command, 100);
@@ -508,83 +471,81 @@ void Engine::Run() // used as a core for functionality
 
 		}
 		// file commands
-		else if (commandInStrings[0].toLower() == "open" && commandInStrings.getSize() == 2 && fileName.isEmpty())
+		else if (commandInStrings[0].toLower() == "open" && commandInStrings.getSize() == 3 )
 		{
-			char* buffer = new char[10000];
-			fileName = commandInStrings[1];
-			std::ifstream input(commandInStrings[1].get_str());
-			while (input.getline(buffer,10000))
+			if (commandInStrings[1].toLower() == "books" && fileNameBooks.isEmpty())
 			{
-				Book temp;
-				temp.setFromFile(buffer);
-				vectorBooks.pushBack(temp);
+				open(commandInStrings[2], true);
 			}
-			delete[] buffer;
-			input.close();
-		}
-		else if (commandInStrings[0].toLower() == "open" && commandInStrings.getSize() != 2)
-		{
-			std::cout << "Invalid command! Try using -help!" << std::endl;
-		}
-		else if (commandInStrings[0].toLower() == "open" && !fileName.isEmpty())
-		{
-			std::cout << "File already openned!" << std::endl;
-		}
-		else if (commandInStrings[0].toLower() == "save" && commandInStrings.getSize() == 1)
-		{
-			std::ofstream output_file;
-			output_file.open(fileName.get_str(), std::ofstream::out | std::ofstream::trunc);;
-
-			for (size_t i = 0; i < vectorBooks.getSize(); i++)
+			else if ((commandInStrings[1].toLower() == "books" && !fileNameBooks.isEmpty()) ||
+			(commandInStrings[1].toLower() == "users" && !fileNameUsers.isEmpty()))
 			{
-				output_file << vectorBooks[i] << std::endl;
+				std::cout << "File already openned!" << std::endl;
 			}
-			std::cout << "File is now saved!" << std::endl;
-			output_file.close();
-		}
-		else if (commandInStrings[0].toLower() == "save" && commandInStrings.getSize() != 1)
-		{
-			std::cout << "Invalid command! Try using -help!" << std::endl;
-		}
-
-
-		else if (commandInStrings[0].toLower() == "saveas" && commandInStrings.getSize() == 2)
-		{
-		std::ofstream output_file;
-		output_file.open(commandInStrings[1].get_str(), std::fstream::in | std::fstream::out | std::fstream::app);
-		for (size_t i = 0; i < vectorBooks.getSize(); i++)
-		{
-			output_file << vectorBooks[i] << std::endl;
-		}
-
-		output_file.close();
-		std::cout << "Saved successfully to file!" << std::endl;
-
-		}
-		else if (commandInStrings[0].toLower() == "saveas" && commandInStrings.getSize() != 2)
-		{
-			std::cout << "Invalid command! Try using -help!" << std::endl;
-		}
-		else if (commandInStrings[0].toLower() == "close" && commandInStrings.getSize() == 1 && !fileName.isEmpty())
-		{
-			fileName.~String();
-			for (size_t i = 0; i < vectorBooks.getSize(); i++)
+			else if (commandInStrings[1].toLower() == "users" && fileNameUsers.isEmpty())
 			{
-				vectorBooks[i].~Book();
+				open(commandInStrings[2], false);
 			}
-			vectorBooks = Vector<Book>();
-			std::cout << "File is now closed!" << std::endl;
+			else
+			{
+				std::cout << "Invalid command! Try using 'help'!" << std::endl;
+			}
+		}
+
+		else if (commandInStrings[0].toLower() == "save" && commandInStrings.getSize() == 2)
+		{
+			if (commandInStrings[1].toLower() == "books" && !fileNameBooks.isEmpty())
+			{
+				save(true);
+			}
+			else if (commandInStrings[1].toLower() == "users" && !fileNameUsers.isEmpty())
+			{
+				save(false);
+			}
+			else if ((commandInStrings[1].toLower() == "books" && fileNameBooks.isEmpty()) ||
+				(commandInStrings[1].toLower() == "users" && fileNameUsers.isEmpty()))
+			{
+				std::cout << "File is not loaded!" << std::endl;
+			}
+			else
+			{
+				std::cout << "Invalid command! Try using 'help'!" << std::endl;
+			}
+		}
+		else if (commandInStrings[0].toLower() == "saveas" && commandInStrings.getSize() == 3)
+		{
+			if (commandInStrings[1].toLower() == "books")
+			{
+				saveAs(commandInStrings[2],true);
+			}
+			else if (commandInStrings[1].toLower() == "users" )
+			{
+				saveAs(commandInStrings[2], false);
+			}
+			else
+			{
+				std::cout << "Invalid command! Try using 'help'!" << std::endl;
+			}
+			
+		}
+		else if (commandInStrings[0].toLower() == "close" && commandInStrings.getSize() == 2 )
+		{
+			if (commandInStrings[1].toLower() == "books" && !fileNameBooks.isEmpty())
+			{
+				close(true);
+			}
+			else if(commandInStrings[1].toLower() == "users" && !fileNameUsers.isEmpty())
+			{
+				close(false);
+			}
+			else
+			{
+				std::cout << "Invalid command! Try using 'help'!" << std::endl;
+			}
 
 		}
-		else if (commandInStrings[0].toLower() == "close" && commandInStrings.getSize() != 1)
-		{
-			std::cout << "Invalid command! Try using -help!" << std::endl;
-		}
-		else if (commandInStrings[0].toLower() == "close" && fileName.isEmpty())
-		{
-			std::cout << "No file has been opened!" << std::endl;
-		}
-		else if (commandInStrings[0].toLower() == "help" && fileName.isEmpty())
+		
+		else if (commandInStrings[0].toLower() == "help" && fileNameBooks.isEmpty())
 		{
 			std::cout << "The following commands are supported:" << std::endl <<
 				"open <file>	opens <file>" << std::endl <<
@@ -603,8 +564,112 @@ void Engine::Run() // used as a core for functionality
 	delete[] command;
 }
 
+//true for Books false for Users
+void Engine:: save(const bool isBooksOrUsers)
+{
+	std::ofstream output_file;
+
+	if (isBooksOrUsers)
+	{
+		output_file.open(fileNameBooks.get_str(), std::ofstream::out | std::ofstream::trunc);
+		for (size_t i = 0; i < vectorBooks.getSize(); i++)
+		{
+			output_file << vectorBooks[i] << std::endl;
+		}
+	}
+	else
+	{
+		output_file.open(fileNameUsers.get_str(), std::ofstream::out | std::ofstream::trunc);
+		for (size_t i = 0; i < vectorUsers.getSize(); i++)
+		{
+			output_file << vectorUsers[i] << std::endl;
+		}
+
+	}
+	output_file.close();
+	std::cout << "File is now saved!" << std::endl;
+}
+void Engine::saveAs(const String nameOfFile, const bool isBooksOrUsers)
+{
+	std::ofstream output_file;
+
+	output_file.open(nameOfFile.get_str(), std::ofstream::out | std::ofstream::trunc);
+	if (isBooksOrUsers)
+	{
+		for (size_t i = 0; i < vectorBooks.getSize(); i++)
+		{
+			output_file << vectorBooks[i] << std::endl;
+		}
+		fileNameBooks = nameOfFile;
+	}
+	else
+	{
+		for (size_t i = 0; i < vectorUsers.getSize(); i++)
+		{
+			output_file << vectorUsers[i] << std::endl;
+		}
+		fileNameUsers = nameOfFile;
+	}
+	
+	std::cout << "File \""<< nameOfFile << "\" is now saved!" << std::endl;
+	output_file.close();
+}
+void Engine::open(const String nameOfFile, const bool isBooksOrUsers)
+{
+	char* buffer = new char[10000];
+	std::ifstream input(nameOfFile.get_str());
+	if (isBooksOrUsers)
+	{
+		while (input.getline(buffer, 10000))
+		{
+			Book temp;
+			temp.setFromFile(buffer);
+			vectorBooks.pushBack(temp);
+		}
+		fileNameBooks = nameOfFile;
+	}
+	else
+	{
+		while (input.getline(buffer, 10000))
+		{
+			User temp;
+			temp.setFromFile(buffer);
+			vectorUsers.pushBack(temp);
+		}
+		fileNameUsers = nameOfFile;
+	}
+	
+	delete[] buffer;
+	input.close();
+	std::cout << "File \"" << nameOfFile << "\" is now open!" << std::endl;
+}
+void Engine::close(const bool isBooksOrUsers)
+{
+	if (isBooksOrUsers)
+	{
+		fileNameBooks.~String();
+		for (size_t i = 0; i < vectorBooks.getSize(); i++)
+		{
+			vectorBooks[i].~Book();
+		}
+		vectorBooks = Vector<Book>();
+	}
+	else
+	{
+		fileNameUsers.~String();
+		for (size_t i = 0; i < vectorUsers.getSize(); i++)
+		{
+			vectorUsers[i].~User();
+		}
+		vectorUsers = Vector<User>();
+	}
+	
+	std::cout << "File is now closed!" << std::endl;
+}
+
+
 // a method used to check if a password or username is chosen according to the security policy
-bool validatePassAndUsername(const char* str) 
+bool Engine:: validatePassAndUsername(const char* str)
 {
 	int specialCnt = 0;
 	int capitalCnt = 0;
@@ -650,7 +715,7 @@ bool validatePassAndUsername(const char* str)
 	return true;
 }
 
-char* trimEmptySpaces(char* input)
+char* Engine:: trimEmptySpaces(char* input)
 {
 	while (input[0] == ' ' )
 	{
@@ -669,7 +734,7 @@ char* trimEmptySpaces(char* input)
 	return input;
 }
 
-Vector<String> splitCommand(char* command)
+Vector<String> Engine:: splitCommand(char* command)
 {
 	Vector<String> splitCommand;
 	

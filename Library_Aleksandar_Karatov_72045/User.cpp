@@ -1,5 +1,6 @@
 #include "User.h"
 #include <cstring>
+#include <fstream>
 User::User()
 {
 	username = nullptr;
@@ -64,6 +65,61 @@ User& User:: operator=(const User& other)
 	copy(other);
 	return *this;
 }
+
+std::ofstream& operator<<(std::ofstream& out, const User& object)
+{
+	 out << object.username << ";" << object.password << ";"<<object.isAdmin;
+	 return out;
+}
+void User:: setFromFile(char* input)
+{
+	for (size_t i = 0; i < strlen(input); i++)
+	{
+		char* temp = new char[30];
+		for (size_t j = 0; input[i] != ';'; j++)
+		{
+			temp[j] = input[i];
+			i++;
+			if (input[i] == ';')
+			{
+				temp[j+1] = '\0';
+				break;
+			}
+		}
+		set_username(temp);
+		i++;
+
+		delete[] temp;
+		temp = new char[30];
+		temp = new char[30];
+		for (size_t j = 0; input[i] != ';'; j++)
+		{
+			temp[j] = input[i];
+			i++;
+			if (input[i] == ';')
+			{
+				temp[j+1] = '\0';
+				break;
+			}
+		}
+		set_password(temp);
+		i++;
+		delete[] temp;
+		if (input[i] == '0')
+		{
+			set_auth(false);
+		}
+		else
+		{
+			set_auth(true);
+		}
+		break;
+	}
+
+}
+
+
+
 void User::destroy()
 {
 	delete[] username;

@@ -1,4 +1,6 @@
 #pragma once
+#include <iostream>
+
 class User
 {
 public:
@@ -14,6 +16,8 @@ public:
 	bool operator==(const User&);
 	bool operator!=(const User&);
 	User& operator= (const User&);
+	friend std::ofstream& operator<<(std::ofstream&, const User&);
+	void setFromFile(char* input);
 	~User();
 
 private:
