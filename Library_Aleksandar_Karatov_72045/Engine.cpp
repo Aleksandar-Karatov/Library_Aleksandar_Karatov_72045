@@ -29,13 +29,32 @@ void Engine::Run() // used as a core for functionality
 				temp.set_username(command);
 				std::cout << "Enter password (special symbols allowed: ! _ - . @ $ % & * < > +):";
 				std::cin.getline(command, 30);
-				isStrValid = validatePassAndUsername(command);
+				String pass = new char[20];
+				char ch;
+				
+				ch = getch();
+				for (size_t i = 0; ch != 13; i++)
+				{
+					pass[i] = ch;
+					std::cout << '*';
+					ch = getch();
+				}
+
+				isStrValid = validatePassAndUsername(pass.get_str());
 				while (!isStrValid)
 				{
 					std::cout << "Enter a valid password (special symbols allowed: ! _ - . @ $ % & * < > +):";
-					std::cin.getline(command, 30);
+					ch = getch();
+					for (size_t i = 0; ch != 13; i++)
+					{
+						pass[i] = ch;
+						std::cout << '*';
+						ch = getch();
+					}
 					isStrValid = validatePassAndUsername(command);
 				}
+				std::cin.sync();
+				std::cin.ignore();
 				temp.set_password(command);
 				std::cout << "Enter authorization: admin or user: ";
 				std::cin.getline(command, 30);
@@ -163,14 +182,25 @@ void Engine::Run() // used as a core for functionality
 			std::cout << "Enter username:";
 			std::cin.getline(command, 30);
 			std::cout << "Enter password:";
-			std::cin.getline(temp, 30);
+			String pass = new char[20];
+			char ch;
 
+			ch = getch();
+			size_t i = 0;
+			for (; ch != 13; i++)
+			{
+				pass[i] = ch;
+				std::cout << '*';
+				ch = getch();
+			}
+			pass[i] = '\0';
+			std::cin.sync();
 			for (size_t i = 0; i < vectorUsers.getSize(); i++)
 			{
-				if (strcmp(command,vectorUsers[i].get_username())==0 && strcmp(temp, vectorUsers[i].get_password())==0)
+				if (strcmp(command,vectorUsers[i].get_username())==0 && strcmp(pass.get_str(), vectorUsers[i].get_password())==0)
 				{
 					currentUser = vectorUsers[i];
-					std::cout << "Welcome, " << currentUser.get_username() << "!" << std::endl;
+					std::cout << std::endl << "Welcome, " << currentUser.get_username() << "!" << std::endl;
 					incorrectLogins = 0;
 					break;
 				}
@@ -178,11 +208,11 @@ void Engine::Run() // used as a core for functionality
 			if (currentUser.get_username() == nullptr)
 			{
 				incorrectLogins++;
-				std::cout << "Incorrect login details!" << std::endl;
+				std::cout << std::endl <<"Incorrect login details!" << std::endl;
 			}
 			if (incorrectLogins > 2)
 			{
-				std::cout << "Three incorrect logins! Exiting..." << std::endl;;
+				std::cout << std::endl << "Three incorrect logins! Exiting..." << std::endl;;
 				break;
 			}
 		}
@@ -233,7 +263,10 @@ void Engine::Run() // used as a core for functionality
 				{
 					if (commandInStrings[2] == vectorBooks[i].get_isbn())
 					{
-						std::cout << vectorBooks[i];
+						std::cout << "Title: " << vectorBooks[i].get_title()  << std::endl <<
+									"Author: " << vectorBooks[i].get_author() << std::endl <<
+									"Genre: "  << vectorBooks[i].get_genre()  << std::endl <<
+									"Rating: " << vectorBooks[i].get_rating() << "/10" << std::endl;
 						isFound = true;
 						break;
 					}
@@ -265,7 +298,8 @@ void Engine::Run() // used as a core for functionality
 					}
 					for (size_t i = 0; i < vectorBooks.getSize(); i++)
 					{
-						if (title == vectorBooks[i].get_title())
+						String temp = vectorBooks[i].get_title();
+						if (title.toLower() == temp.toLower())
 						{
 							std::cout << vectorBooks[i];
 							isFound = true;
@@ -282,10 +316,12 @@ void Engine::Run() // used as a core for functionality
 					}
 					for (size_t i = 0; i < vectorBooks.getSize(); i++)
 					{
-						if (author == vectorBooks[i].get_author())
+						String temp = vectorBooks[i].get_author();
+						if (author.toLower() == temp.toLower())
 						{
-							std::cout << vectorBooks[i] << std::endl;;
+							std::cout << vectorBooks[i];
 							isFound = true;
+							break;
 						}
 					}
 				}
@@ -300,7 +336,9 @@ void Engine::Run() // used as a core for functionality
 					{
 						for (size_t j = 0; j < vectorBooks[i].get_keywords().getSize(); j++)
 						{
-							if (tag == vectorBooks[i].get_keywords()[j])
+							String temp = vectorBooks[i].get_keywords()[j];
+
+							if (tag.toLower() == temp.toLower())
 							{
 								std::cout << vectorBooks[i] << std::endl;
 								isFound = true;
@@ -555,6 +593,26 @@ void Engine::Run() // used as a core for functionality
 				"help			prints this information" << std::endl <<
 				"exit			exists the program" << std::endl;
 		}
+		//sort title, author, year, rating
+		else if (commandInStrings[0].toLower() == "sort" && commandInStrings.getSize()>=2 && currentUser.get_username() != nullptr)
+		{
+			if ((commandInStrings.getSize() == 2) || (commandInStrings.getSize() == 3 && commandInStrings[2].toLower() == "asc"))
+			{
+				sortBooks(commandInStrings[1].toLower(), true);
+			}
+			else if (commandInStrings.getSize() == 3 && commandInStrings[2].toLower() == "desc")
+			{
+				sortBooks(commandInStrings[1].toLower(), false);
+			}
+		}
+		else if (commandInStrings[0].toLower() == "sort" && currentUser.get_username() == nullptr)
+		{
+			std::cout << "You have to be logged in to use this function!" << std::endl;
+		}
+		else if (commandInStrings[0].toLower() == "sort" && (commandInStrings.getSize() >= 3 || commandInStrings.getSize() < 2))
+		{
+			std::cout << "Invalid input!" << std::endl;
+		}
 		std::cout << "Enter new command:";
 		std::cin.getline(command, 100);
 		command = trimEmptySpaces(command);
@@ -758,4 +816,133 @@ Vector<String> Engine:: splitCommand(char* command)
 	}
 	return splitCommand;
 	
+}
+
+
+
+
+
+
+
+//when isAsc true -> ascending
+void Engine::sortBooks( const String command, const bool isAsc)
+{
+	Vector<Book> temp = vectorBooks;
+	if (command == "title")
+	{
+		int i, j;
+		Book key;
+		for (i = 1; i < temp.getSize(); i++)
+		{
+			key = temp[i];
+			j = i - 1;
+			while (j >= 0 && compareStrings(temp[j].get_title(), key.get_title()))
+			{
+				temp[j + 1] = temp[j];
+				j = j - 1;
+			}
+			temp[j + 1] = key;
+		}
+	}
+	else if (command == "author")
+	{
+		int i, j;
+		Book key;
+		for (i = 1; i < temp.getSize(); i++)
+		{
+			key = temp[i];
+			j = i - 1;
+			while (j >= 0 && compareStrings(temp[j].get_author(), key.get_author()))
+			{
+				temp[j + 1] = temp[j];
+				j = j - 1;
+			}
+			temp[j + 1] = key;
+		}
+	}
+	else if (command == "rating")
+	{
+		int i, j;
+		Book key;
+		for (i = 1; i < temp.getSize(); i++)
+		{
+			key = temp[i];
+			j = i - 1;
+			while (j >= 0 && temp[j].get_rating() > key.get_rating())
+			{
+				temp[j + 1] = temp[j];
+				j = j - 1;
+			}
+			temp[j + 1] = key;
+		}
+	}
+	else if (command == "year")
+	{
+		int i, j;
+		Book key;
+		for (i = 1; i < temp.getSize(); i++)
+		{
+			key = temp[i];
+			j = i - 1;
+			while (j >= 0 && temp[j].get_yearOfPublishing()> key.get_yearOfPublishing())
+			{
+				temp[j + 1] = temp[j];
+				j = j - 1;
+			}
+			temp[j + 1] = key;
+		}
+	}
+	if (isAsc)
+	{
+		for (size_t i = 0; i < temp.getSize(); i++)
+		{
+			std::cout << "|N: " << i + 1 << "| " << temp[i] << std::endl;
+		}
+	}
+	else
+	{
+		for (int i = temp.getSize() - 1; i >=0 ; i--)
+		{
+			std::cout << "|N: " << i + 1 << "| " << temp[i] << std::endl;
+		}
+	}
+	
+}
+
+bool Engine:: compareStrings(const char* str1,const char* str2)
+{
+	char* temp1 = new char[strlen(str1) + 1];
+	strcpy_s(temp1, strlen(str1) + 1, str1);
+	char* temp2 = new char[strlen(str2) + 1];
+	strcpy_s(temp2, strlen(str2) + 1, str2);
+	size_t maxLength = std::max<size_t>(strlen(temp1), strlen(temp1));
+	for (size_t i = 0; i < maxLength; i++)
+	{
+		
+		if (temp1[i] != '\0' && temp2[i] == '\0')
+		{
+			return true;
+		}
+		else if (temp1[i] == '\0' && temp2[i] != '\0')
+		{
+			return false;
+		}
+		if (temp1[i] >= 'A' && temp1[i] <= 'Z')
+		{
+			temp1[i] += 32;
+		}
+		if (temp2[i] >= 'A' && temp2[i] <= 'Z')
+		{
+			temp2[i] += 32;
+		}
+		if (temp1[i] > temp2[i])
+		{
+			return true;
+		}
+		else if (temp1[i] < temp2[i])
+		{
+			return false;
+		}
+	}
+	return false;
 }

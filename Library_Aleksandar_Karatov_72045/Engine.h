@@ -1,5 +1,5 @@
 #pragma once
-
+#include <conio.h>
 #include "Vector.h"
 #include "User.h"
 #include <iostream>
@@ -24,6 +24,8 @@ class Engine
 		bool validatePassAndUsername(const char*);
 		char* trimEmptySpaces(char*);
 		Vector<String> splitCommand(char*);
+		void sortBooks(const String, const bool);
+		bool compareStrings( const char* str1, const char* str2);
 public:
 
 	void Run();
