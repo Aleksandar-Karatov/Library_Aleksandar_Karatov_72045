@@ -24,8 +24,11 @@ User::~User()
 }
 void User:: set_username(const char* other)
 {
-	username = new char[strlen(other) + 1];
-	strcpy_s(username, strlen(other) + 1, other);
+	if (validatePassAndUsername(other))
+	{
+		username = new char[strlen(other) + 1];
+		strcpy_s(username, strlen(other) + 1, other);
+	}
 }
 const char* User::get_username()
 {
@@ -37,8 +40,11 @@ const bool User::get_auth()
 }
 void User:: set_password(const char* other)
 {
-	password = new char[strlen(other) + 1];
-	strcpy_s(password, strlen(other) + 1, other);
+	if (validatePassAndUsername(other))
+	{
+		password = new char[strlen(other) + 1];
+		strcpy_s(password, strlen(other) + 1, other);
+	}
 }
 const char* User::get_password()
 {
@@ -139,4 +145,50 @@ void User::copy(const User& other)
 		isAdmin = other.isAdmin;
 	}
 	
+}
+
+bool User::validatePassAndUsername(const char* str)
+{
+	int specialCnt = 0;
+	int capitalCnt = 0;
+	int numberCnt = 0;
+	int smallLetterCnt = 0;
+	if (strlen(str) < 8)
+	{
+		std::cout << "Input shorter than 8 symbols" << std::endl;
+		return false;
+	}
+	for (size_t i = 0; i < strlen(str); i++)
+	{
+		if (str[i] >= '0' && str[i] <= '9')
+		{
+			numberCnt++;
+		}
+		else if (str[i] == '!' || str[i] == '_' || str[i] == '-' || str[i] == '.' ||
+			str[i] == '@' || str[i] == '$' || str[i] == '%' || str[i] == '&' ||
+			str[i] == '*' || str[i] == '<' || str[i] == '>' || str[i] == '+')
+		{
+			specialCnt++;
+		}
+		else if (str[i] >= 'a' && str[i] <= 'z')
+		{
+			smallLetterCnt++;
+		}
+		else if (str[i] >= 'A' && str[i] <= 'Z')
+		{
+			capitalCnt++;
+		}
+		else
+		{
+			std::cout << "Invalid symbol : " << str[i] << std::endl;
+			return false;
+		}
+	}
+	if (numberCnt == 0 || capitalCnt == 0 || smallLetterCnt == 0 || specialCnt == 0)
+	{
+		std::cout << "Input has to contain at least one capital letter, one small letter, one special symbol and one number!" << std::endl;
+		return false;
+	}
+
+	return true;
 }

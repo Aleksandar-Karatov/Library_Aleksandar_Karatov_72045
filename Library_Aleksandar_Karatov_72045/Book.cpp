@@ -1,14 +1,14 @@
 #include "Book.h"
 #include<fstream>
-
+#include <ctime>
 Book::Book()
 {
 	author = nullptr;
 	title = nullptr;
 	genre = nullptr;
-	yearOfPublishing = 0;
+	yearOfPublishing = NULL;
 	keywords = Vector<String>();
-	rating = -1;
+	rating = NULL;
 	isbn = nullptr;
 }
 Book::Book(const char* Author, const char* Title, const char* Genre, const char* Description,  const int YearOfPublishing,
@@ -17,9 +17,9 @@ Book::Book(const char* Author, const char* Title, const char* Genre, const char*
 	set_author(Author);
 	set_title(Title);
 	set_genre(Genre);
-	yearOfPublishing = YearOfPublishing;
+	set_yearOfPublishing(YearOfPublishing);
 	set_keywords(Keywords);
-	rating = Rating;
+	set_rating(Rating);
 	set_isbn(Isbn);
 	set_description(Description);
 }
@@ -31,27 +31,46 @@ Book::Book(const Book& other)
 
 void Book::set_author(const char* other )
 {
-	author = new char[strlen(other) + 1];
-	strcpy_s(author, strlen(other) + 1, other);
+	if (strlen(other)<=30)
+	{
+		author = new char[strlen(other) + 1];
+		strcpy_s(author, strlen(other) + 1, other);
+	}
+
 }
 void Book::set_description(const char* other)
 {
-	description = new char[strlen(other) + 1];
-	strcpy_s(description, strlen(other) + 1, other);
+	if (strlen(other) <=100)
+	{
+		description = new char[strlen(other) + 1];
+		strcpy_s(description, strlen(other) + 1, other);
+	}
 }
 void Book::set_title(const char* other)
 {
-	title = new char[strlen(other) + 1];
-	strcpy_s(title, strlen(other) + 1, other);
+	if (strlen(other) <= 30)
+	{
+		title = new char[strlen(other) + 1];
+		strcpy_s(title, strlen(other) + 1, other);
+	}
 }
 void Book::set_genre(const char* other)
 {
-	genre = new char[strlen(other) + 1];
-	strcpy_s(genre, strlen(other) + 1, other);
+	if (strlen(other) <= 20)
+	{
+		genre = new char[strlen(other) + 1];
+		strcpy_s(genre, strlen(other) + 1, other);
+	}
 }
 void Book::set_yearOfPublishing(const int other)
 {
-	yearOfPublishing = other;
+	time_t t = time(NULL);
+	tm* timePtr = localtime(&t);
+	if (other <= timePtr->tm_year + 1900)
+	{
+		yearOfPublishing = other;
+	}
+
 }
 void Book::set_keywords(const Vector<String> other)
 {
@@ -59,12 +78,27 @@ void Book::set_keywords(const Vector<String> other)
 }
 void Book::set_rating(const double other)
 {
-	rating = other;
+	if (other <= 10 && other >= 0)
+	{
+		rating = other;
+	}
 }
 void Book::set_isbn(const char* other)
 {
-	isbn = new char[strlen(other) + 1];
-	strcpy_s(isbn, strlen(other) + 1, other);
+	bool containsOnlyNums = true;
+	for (size_t i = 0; i < strlen(other); i++)
+	{
+		if (other[i] < '0' || other[i] > '9')
+		{
+			containsOnlyNums = false;
+		}
+	}
+	if (strlen(other)==13 && containsOnlyNums)
+	{
+		isbn = new char[strlen(other) + 1];
+		strcpy_s(isbn, strlen(other) + 1, other);
+	}
+
 }
 
 
@@ -168,8 +202,8 @@ void Book::copy(const Book& other)
 		set_keywords(other.keywords);
 		set_title(other.title);
 		set_description(other.description);
-		rating = other.rating;
-		yearOfPublishing = other.yearOfPublishing;
+		set_rating( other.rating);
+		set_yearOfPublishing(other.yearOfPublishing);
 	}
 	
 }
@@ -220,6 +254,10 @@ std::ofstream& operator<<(std::ofstream& output, const Book& object)
 			spaceToEqualSign(object.description) << ";" <<
 			object.yearOfPublishing <<";" << object.rating << ";"<< object.isbn << ";";
 	String tempKeyword;
+	equalSignToSpace(object.author);
+	equalSignToSpace(object.title);
+	equalSignToSpace(object.genre);
+	equalSignToSpace(object.description);
 	for (size_t i = 0; i < object.keywords.getSize() ; i++)
 	{
 		tempKeyword = object.keywords[i];

@@ -16,12 +16,11 @@ class Engine
 		Vector<String> commandInStrings;
 		String fileNameBooks;
 		String fileNameUsers;
-
 		void save(const bool);
 		void saveAs(const String, const bool);
 		void open(const String, const bool);
 		void close(const bool);
-		bool validatePassAndUsername(const char*);
+		bool checkIfISBNIsTaken(const char*);
 		char* trimEmptySpaces(char*);
 		Vector<String> splitCommand(char*);
 		void sortBooks(const String, const bool);

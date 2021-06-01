@@ -19,44 +19,50 @@ void Engine::Run() // used as a core for functionality
 				User temp;
 				std::cout << "Enter username (special symbols allowed: ! _ - . @ $ % & * < > +):";
 				std::cin.getline(command, 30);
-				bool isStrValid = validatePassAndUsername(command);
-				while (!isStrValid)
+				temp.set_username(command);
+				while (temp.get_username() == nullptr)
 				{
 					std::cout << "Enter a valid username (special symbols allowed: ! _ - . @ $ % & * < > +):";
 					std::cin.getline(command, 30);
-					isStrValid = validatePassAndUsername(command);
+					temp.set_username(command);
 				}
 				temp.set_username(command);
 				std::cout << "Enter password (special symbols allowed: ! _ - . @ $ % & * < > +):";
-				std::cin.getline(command, 30);
 				String pass = new char[20];
 				char ch;
 				
 				ch = getch();
-				for (size_t i = 0; ch != 13; i++)
+				int lenPass = 0;
+				for (; ch != 13; lenPass++)
 				{
-					pass[i] = ch;
+					pass[lenPass] = ch;
 					std::cout << '*';
 					ch = getch();
 				}
-
-				isStrValid = validatePassAndUsername(pass.get_str());
-				while (!isStrValid)
+				std::cin.sync();
+				pass[lenPass] = '\0';
+				temp.set_password(pass.get_str());
+				pass.~String();
+				pass = new char[20];
+				while (temp.get_password()==nullptr)
 				{
-					std::cout << "Enter a valid password (special symbols allowed: ! _ - . @ $ % & * < > +):";
+					std::cout << std::endl << "Enter a valid password (special symbols allowed: ! _ - . @ $ % & * < > +):";
 					ch = getch();
-					for (size_t i = 0; ch != 13; i++)
+					lenPass = 0;
+					for (; ch != 13; lenPass++)
 					{
-						pass[i] = ch;
+						pass[lenPass] = ch;
 						std::cout << '*';
 						ch = getch();
 					}
-					isStrValid = validatePassAndUsername(command);
+					std::cin.sync();
+					pass[lenPass] = '\0';
+					temp.set_password(pass.get_str());
+					pass.~String();
+					pass = new char[20];
 				}
 				std::cin.sync();
-				std::cin.ignore();
-				temp.set_password(command);
-				std::cout << "Enter authorization: admin or user: ";
+				std::cout << std::endl << "Enter authorization: admin or user: ";
 				std::cin.getline(command, 30);
 				command = trimEmptySpaces(command);
 				while (strcmp(command, "admin") != 0 && strcmp(command, "user") != 0 && strcmp(command, "") != 0)
@@ -89,14 +95,15 @@ void Engine::Run() // used as a core for functionality
 				}
 				temp.~User();
 			}
-			else if (commandInStrings[1].toLower() == "add" && currentUser.get_auth() == false)
-			{
-				std::cout << "You are unauthorized to create users!" << std::endl;
-			}
 			else if (commandInStrings[1].toLower() == "add" && commandInStrings.getSize() != 2)
 			{
 				std::cout << "Invalid input!" << std::endl;
 			}
+			else if (commandInStrings[1].toLower() == "add" && currentUser.get_auth() == false)
+			{
+				std::cout << "You are unauthorized to create users!" << std::endl;
+			}
+			
 
 
 			//users remove
@@ -136,14 +143,15 @@ void Engine::Run() // used as a core for functionality
 				}
 
 			}
-			else if (commandInStrings[1].toLower() == "remove" && currentUser.get_auth() == false)
-			{
-				std::cout << "You are unauthorized to remove users!" << std::endl;
-			}
 			else if (commandInStrings[1].toLower() == "remove" && commandInStrings.getSize() != 3)
 			{
 				std::cout << "Invalid input!" << std::endl;
 			}
+			else if (commandInStrings[1].toLower() == "remove" && currentUser.get_auth() == false)
+			{
+				std::cout << "You are unauthorized to remove users!" << std::endl;
+			}
+			
 
 
 			//users all
@@ -162,13 +170,13 @@ void Engine::Run() // used as a core for functionality
 					}
 				}
 			}
-			else if (commandInStrings[1].toLower() == "all" && currentUser.get_auth() == false)
-			{
-				std::cout << "You are unauthorized to view users!" << std::endl;
-			}
 			else if (commandInStrings[1].toLower() == "all" && commandInStrings.getSize() != 2)
 			{
 				std::cout << "Invalid input!" << std::endl;
+			}
+			else if (commandInStrings[1].toLower() == "all" && currentUser.get_auth() == false)
+			{
+				std::cout << "You are unauthorized to view users!" << std::endl;
 			}
 		}
 
@@ -176,7 +184,7 @@ void Engine::Run() // used as a core for functionality
 
 
 		//login
-		else if (commandInStrings[0].toLower() == "login" && currentUser.get_username()==nullptr)
+		else if (commandInStrings[0].toLower() == "login" && currentUser.get_username()==nullptr && commandInStrings.getSize() == 1)
 		{
 			char* temp = new char[30];
 			std::cout << "Enter username:";
@@ -216,6 +224,10 @@ void Engine::Run() // used as a core for functionality
 				break;
 			}
 		}
+		else if (commandInStrings[0].toLower() == "login" && commandInStrings.getSize() != 1)
+		{
+			std::cout << "Invalid command!" << std::endl;
+		}
 		else if (commandInStrings[0].toLower() == "login" && currentUser.get_username() != nullptr)
 		{
 			std::cout << "You are currently logged in!" << std::endl;
@@ -223,11 +235,14 @@ void Engine::Run() // used as a core for functionality
 
 
 		//logout
-		else if (commandInStrings[0].toLower() == "logout" && currentUser.get_username() != nullptr)
+		else if (commandInStrings[0].toLower() == "logout" && currentUser.get_username() != nullptr && commandInStrings.getSize() == 1)
 		{
 			currentUser.~User();
-			//currentUser = User();
 			std::cout << "You have logged out!" << std::endl;
+		}
+		else if (commandInStrings[0].toLower() == "logout" && commandInStrings.getSize() != 1)
+		{
+			std::cout << std::endl << "Invalid command!" << std::endl;
 		}
 		else if (commandInStrings[0].toLower() == "logout" && currentUser.get_username() == nullptr)
 		{
@@ -276,14 +291,15 @@ void Engine::Run() // used as a core for functionality
 					std::cout << "There isn`t a book with such ISBN!" << std::endl;
 				}
 			}
-			else if (commandInStrings[1].toLower() == "info" &&  currentUser.get_username() == nullptr)
-			{
-				std::cout << "You need to login to see the books in the library!" << std::endl;
-			}
 			else if (commandInStrings[1].toLower() == "info" && commandInStrings.getSize() != 3)
 			{
 				std::cout << "Invalid input!" << std::endl;
 			}
+			else if (commandInStrings[1].toLower() == "info" &&  currentUser.get_username() == nullptr)
+			{
+				std::cout << "You need to login to see the books in the library!" << std::endl;
+			}
+			
 			//books find
 			else if (commandInStrings[1].toLower() == "find" && currentUser.get_username() != nullptr && commandInStrings.getSize() >= 4)
 			{
@@ -319,9 +335,8 @@ void Engine::Run() // used as a core for functionality
 						String temp = vectorBooks[i].get_author();
 						if (author.toLower() == temp.toLower())
 						{
-							std::cout << vectorBooks[i];
+							std::cout << vectorBooks[i] << std::endl;
 							isFound = true;
-							break;
 						}
 					}
 				}
@@ -344,6 +359,7 @@ void Engine::Run() // used as a core for functionality
 								isFound = true;
 							}
 						}
+
 					}
 
 					
@@ -353,14 +369,15 @@ void Engine::Run() // used as a core for functionality
 					std::cout << "There isn`t a book with such parameters!" << std::endl;
 				}
 			}
+			else if (commandInStrings[1].toLower() == "find" && commandInStrings.getSize() < 4)
+			{
+				std::cout << "Invalid command!" << std::endl;
+			}
 			else if (commandInStrings[1].toLower() == "find" && currentUser.get_username() == nullptr)
 			{
 				std::cout << "You need to login to see the books in the library!" << std::endl;
 			}
-			else if (commandInStrings[1].toLower() == "find" && commandInStrings.getSize() < 4)
-			{
-				std::cout << "Incomplete command!" << std::endl;
-			}
+
 
 
 			// books add
@@ -368,59 +385,101 @@ void Engine::Run() // used as a core for functionality
 			{
 				Book temp;
 				std::cout << "Enter title:";
-				std::cin.getline(command, 30);
+				std::cin.getline(command, 100);
 				command = trimEmptySpaces(command);
 				temp.set_title(command);
+				while (temp.get_title() == nullptr)
+				{
+					std::cout << "Enter a valid title (up to 30 symbols):";
+					std::cin.getline(command, 100);
+					command = trimEmptySpaces(command);
+					temp.set_title(command);
+				}
+
 				std::cout << "Enter author:";
-				std::cin.getline(command, 30);
+				std::cin.getline(command, 100);
 				command = trimEmptySpaces(command);
 				temp.set_author(command);
+				while (temp.get_author() == nullptr)
+				{
+					std::cout << "Enter a valid name (up to 30 symbols):";
+					std::cin.getline(command, 100);
+					command = trimEmptySpaces(command);
+					temp.set_author(command);
+				}
+
 				std::cout << "Enter genre:";
-				std::cin.getline(command, 30);
+				std::cin.getline(command, 100);
 				command = trimEmptySpaces(command);
 				temp.set_genre(command);
+				while (temp.get_genre() == nullptr)
+				{
+					std::cout << "Enter a valid genre (up to 20 symbols):";
+					std::cin.getline(command, 100);
+					command = trimEmptySpaces(command);
+					temp.set_genre(command);
+				}
+
 				std::cout << "Enter description:";
-				char* description = new char[100];
-				std::cin.getline(description, 100);
+				char* description = new char[200];
+				std::cin.getline(description, 200);
 				command = trimEmptySpaces(description);
 				temp.set_description(description);
+				while (temp.get_description() == nullptr)
+				{
+					std::cout << "Enter a valid description (up to 100 symbols):";
+					std::cin.getline(command, 200);
+					command = trimEmptySpaces(command);
+					temp.set_description(command);
+				}
+
 				delete[] description;
 				description = nullptr;
 				std::cout << "Enter ISBN:";
 				std::cin.getline(command, 30);
 				command = trimEmptySpaces(command);
-				for (size_t i = 0; i < vectorBooks.getSize(); i++)
+				while (temp.get_isbn() == nullptr || checkIfISBNIsTaken(command))
 				{
-					if (strcmp(command, vectorBooks[i].get_isbn()) == 0)
+					
+					if (temp.get_isbn() == nullptr)
+					{
+						std::cout << "Enter a valid ISBN (exactly 13 numbers, no letters, no spaces):";
+						std::cin.getline(command, 30);
+						command = trimEmptySpaces(command);
+					}
+					while (checkIfISBNIsTaken(command))
 					{
 						std::cout << "ISBN is taken! Chose another: ";
 						std::cin.getline(command, 30);
 						command = trimEmptySpaces(command);
-						i = -1;
 					}
+					temp.set_isbn(command);
+
 				}
-				temp.set_isbn(command);
-				
+
 				double rating;
 				std::cout << "Enter rating:";
 				std::cin >> rating;
-				while (rating > 10 || rating < 0)
+				temp.set_rating(rating);
+				while (temp.get_rating() == NULL)
 				{
 					std::cout << "Enter a rating between 0 and 10:";
 					std::cin >> rating;
+					temp.set_rating(rating);
 				}
-				temp.set_rating(rating);
+				
 				int yearofPublish;
 				std::cout << "Enter year of publishing:";
 				std::cin >> yearofPublish;
+				temp.set_yearOfPublishing(yearofPublish);
 				time_t t = time(NULL);
 				tm* timePtr = localtime(&t);
-				while (yearofPublish > timePtr->tm_year + 1900)
+				while (temp.get_yearOfPublishing() == NULL)
 				{
 					std::cout << "Enter a valid year of publishing (before or equal to " << timePtr->tm_year + 1900 << "): ";
 					std::cin >> yearofPublish;
+					temp.set_yearOfPublishing(yearofPublish);
 				}
-				temp.set_yearOfPublishing(yearofPublish);
 				std::cout << "Enter keywords (reads until empty line):";
 				std::cin.sync();
 				std::cin.ignore();
@@ -450,14 +509,15 @@ void Engine::Run() // used as a core for functionality
 					std::cout << "Invalid input! Operation is cancelled!" << std::endl;
 				}
 			}
-			else if (commandInStrings[1].toLower() == "add" && currentUser.get_auth() == false)
-			{
-				std::cout << "You are unauthorized to add books!" << std::endl;
-			}
 			else if (commandInStrings[1].toLower() == "add" && commandInStrings.getSize() != 2)
 			{
 				std::cout << "Invalid input!" << std::endl;
 			}
+			else if (commandInStrings[1].toLower() == "add" && currentUser.get_auth() == false)
+			{
+				std::cout << "You are unauthorized to add books!" << std::endl;
+			}
+			
 
 			//books remove
 			else if (commandInStrings[1].toLower() == "remove" && currentUser.get_auth() == true && commandInStrings.getSize() >=3)
@@ -498,17 +558,19 @@ void Engine::Run() // used as a core for functionality
 				}
 
 			}
+			else if (commandInStrings[1].toLower() == "remove" && commandInStrings.getSize() < 3)
+			{
+				std::cout << "Invalid command!" << std::endl;
+			}
 			else if (commandInStrings[1].toLower() == "remove" && currentUser.get_auth() == false )
 			{
 				std::cout << "You are unauthorized to remove books!" << std::endl;
 			}
-			else if (commandInStrings[1].toLower() == "remove" && commandInStrings.getSize() < 3)
-			{
-				std::cout << "Incomplete command!" << std::endl;
-			}
+
 
 		}
 		// file commands
+		//open
 		else if (commandInStrings[0].toLower() == "open" && commandInStrings.getSize() == 3 )
 		{
 			if (commandInStrings[1].toLower() == "books" && fileNameBooks.isEmpty())
@@ -529,7 +591,11 @@ void Engine::Run() // used as a core for functionality
 				std::cout << "Invalid command! Try using 'help'!" << std::endl;
 			}
 		}
-
+		else if (commandInStrings[0].toLower() == "open" && commandInStrings.getSize() != 3)
+		{
+			std::cout << "Invalid command! Try using 'help'!" << std::endl;
+		}
+		//save
 		else if (commandInStrings[0].toLower() == "save" && commandInStrings.getSize() == 2)
 		{
 			if (commandInStrings[1].toLower() == "books" && !fileNameBooks.isEmpty())
@@ -550,6 +616,11 @@ void Engine::Run() // used as a core for functionality
 				std::cout << "Invalid command! Try using 'help'!" << std::endl;
 			}
 		}
+		else if (commandInStrings[0].toLower() == "save" && commandInStrings.getSize() != 2)
+		{
+			std::cout << "Invalid command! Try using 'help'!" << std::endl;
+		}
+		//save as
 		else if (commandInStrings[0].toLower() == "saveas" && commandInStrings.getSize() == 3)
 		{
 			if (commandInStrings[1].toLower() == "books")
@@ -564,8 +635,13 @@ void Engine::Run() // used as a core for functionality
 			{
 				std::cout << "Invalid command! Try using 'help'!" << std::endl;
 			}
-			
 		}
+		else if (commandInStrings[0].toLower() == "saveas" && commandInStrings.getSize() != 3)
+		{
+			std::cout << "Invalid command! Try using 'help'!" << std::endl;
+		}
+
+		//close
 		else if (commandInStrings[0].toLower() == "close" && commandInStrings.getSize() == 2 )
 		{
 			if (commandInStrings[1].toLower() == "books" && !fileNameBooks.isEmpty())
@@ -582,8 +658,12 @@ void Engine::Run() // used as a core for functionality
 			}
 
 		}
+		else if (commandInStrings[0].toLower() == "close" && commandInStrings.getSize() != 2)
+		{
+			std::cout << "Invalid command! Try using 'help'!" << std::endl;
+		}
 		
-		else if (commandInStrings[0].toLower() == "help" && fileNameBooks.isEmpty())
+		else if (commandInStrings[0].toLower() == "help"  && commandInStrings.getSize() ==1)
 		{
 			std::cout << "The following commands are supported:" << std::endl <<
 				"open <file>	opens <file>" << std::endl <<
@@ -592,6 +672,10 @@ void Engine::Run() // used as a core for functionality
 				"saveas <file>	saves the currently open file in <file>" << std::endl <<
 				"help			prints this information" << std::endl <<
 				"exit			exists the program" << std::endl;
+		}
+		else if (commandInStrings[0].toLower() == "help" && commandInStrings.getSize() != 1)
+		{
+			std::cout << "Invalid command! Try using 'help'!" << std::endl;
 		}
 		//sort title, author, year, rating
 		else if (commandInStrings[0].toLower() == "sort" && commandInStrings.getSize()>=2 && currentUser.get_username() != nullptr)
@@ -610,6 +694,10 @@ void Engine::Run() // used as a core for functionality
 			std::cout << "You have to be logged in to use this function!" << std::endl;
 		}
 		else if (commandInStrings[0].toLower() == "sort" && (commandInStrings.getSize() >= 3 || commandInStrings.getSize() < 2))
+		{
+			std::cout << "Invalid input!" << std::endl;
+		}
+		else
 		{
 			std::cout << "Invalid input!" << std::endl;
 		}
@@ -646,6 +734,7 @@ void Engine:: save(const bool isBooksOrUsers)
 	}
 	output_file.close();
 	std::cout << "File is now saved!" << std::endl;
+
 }
 void Engine::saveAs(const String nameOfFile, const bool isBooksOrUsers)
 {
@@ -692,7 +781,19 @@ void Engine::open(const String nameOfFile, const bool isBooksOrUsers)
 		{
 			User temp;
 			temp.setFromFile(buffer);
-			vectorUsers.pushBack(temp);
+			bool isInVector = false;
+			for (size_t i = 0; i < vectorUsers.getSize(); i++)
+			{
+				if (temp == vectorUsers[i])
+				{
+					isInVector = true;
+					break;
+				}
+			}
+			if (!isInVector)
+			{
+				vectorUsers.pushBack(temp);
+			}
 		}
 		fileNameUsers = nameOfFile;
 	}
@@ -720,58 +821,12 @@ void Engine::close(const bool isBooksOrUsers)
 			vectorUsers[i].~User();
 		}
 		vectorUsers = Vector<User>();
+		vectorUsers.pushBack(currentUser);
 	}
 	
 	std::cout << "File is now closed!" << std::endl;
 }
 
-
-// a method used to check if a password or username is chosen according to the security policy
-bool Engine:: validatePassAndUsername(const char* str)
-{
-	int specialCnt = 0;
-	int capitalCnt = 0;
-	int numberCnt = 0;
-	int smallLetterCnt = 0;
-	if (strlen(str) < 8)
-	{
-		std::cout << "Input shorter than 8 symbols" << std::endl;
-		return false;
-	}
-	for (size_t i = 0; i < strlen(str); i++)
-	{
-		if (str[i] >= '0' && str[i] <= '9')
-		{
-			numberCnt++;
-		}
-		else if (str[i] == '!' || str[i] == '_' || str[i] == '-' || str[i] == '.' ||
-				 str[i] == '@' || str[i] == '$' || str[i] == '%' || str[i] == '&' || 
-				 str[i] == '*' || str[i] == '<' || str[i] == '>' || str[i] == '+')
-		{
-			specialCnt++;
-		}
-		else if (str[i] >= 'a' && str[i] <= 'z')
-		{
-			smallLetterCnt++;
-		}
-		else if (str[i] >= 'A' && str[i] <= 'Z')
-		{
-			capitalCnt++;
-		}
-		else
-		{
-			std::cout << "Invalid symbol : " << str[i] << std::endl;
-			return false;
-		}
-	}
-	if (numberCnt == 0 || capitalCnt == 0 || smallLetterCnt == 0 || specialCnt == 0)
-	{
-		std::cout << "Input has to contain at least one capital letter, one small letter, one special symbol and one number!" << std::endl;
-		return false;
-	}
-
-	return true;
-}
 
 char* Engine:: trimEmptySpaces(char* input)
 {
@@ -946,3 +1001,15 @@ bool Engine:: compareStrings(const char* str1,const char* str2)
 	}
 	return false;
 }
+bool Engine::checkIfISBNIsTaken(const char* command) 
+{
+	for (size_t i = 0; i < vectorBooks.getSize(); i++)
+	{
+		if (strcmp(command, vectorBooks[i].get_isbn()) == 0)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+

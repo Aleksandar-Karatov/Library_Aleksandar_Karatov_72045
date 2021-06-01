@@ -26,5 +26,6 @@ private:
 	bool isAdmin;
 	void copy(const User& other);
 	void destroy();
+	bool validatePassAndUsername(const char* str);
 };
 
