@@ -63,6 +63,7 @@ String& String:: operator=(const String& other)
 {
 	if (this != &other)
 	{
+		destroy();
 		copy(other);
 	}
 	return *this;

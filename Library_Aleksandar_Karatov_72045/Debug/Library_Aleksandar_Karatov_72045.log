@@ -1,6 +1,6 @@
 ﻿  Engine.cpp
-D:\OOP FMI\Practicum\Library_Aleksandar_Karatov_72045\Library_Aleksandar_Karatov_72045\Engine.cpp(890,17): warning C4018: '<': signed/unsigned mismatch
-D:\OOP FMI\Practicum\Library_Aleksandar_Karatov_72045\Library_Aleksandar_Karatov_72045\Engine.cpp(906,17): warning C4018: '<': signed/unsigned mismatch
-D:\OOP FMI\Practicum\Library_Aleksandar_Karatov_72045\Library_Aleksandar_Karatov_72045\Engine.cpp(922,17): warning C4018: '<': signed/unsigned mismatch
-D:\OOP FMI\Practicum\Library_Aleksandar_Karatov_72045\Library_Aleksandar_Karatov_72045\Engine.cpp(938,17): warning C4018: '<': signed/unsigned mismatch
+D:\OOP FMI\Practicum\Library_Aleksandar_Karatov_72045\Library_Aleksandar_Karatov_72045\Engine.cpp(892,17): warning C4018: '<': signed/unsigned mismatch
+D:\OOP FMI\Practicum\Library_Aleksandar_Karatov_72045\Library_Aleksandar_Karatov_72045\Engine.cpp(908,17): warning C4018: '<': signed/unsigned mismatch
+D:\OOP FMI\Practicum\Library_Aleksandar_Karatov_72045\Library_Aleksandar_Karatov_72045\Engine.cpp(924,17): warning C4018: '<': signed/unsigned mismatch
+D:\OOP FMI\Practicum\Library_Aleksandar_Karatov_72045\Library_Aleksandar_Karatov_72045\Engine.cpp(940,17): warning C4018: '<': signed/unsigned mismatch
   Library_Aleksandar_Karatov_72045.vcxproj -> D:\OOP FMI\Practicum\Library_Aleksandar_Karatov_72045\Debug\Library_Aleksandar_Karatov_72045.exe

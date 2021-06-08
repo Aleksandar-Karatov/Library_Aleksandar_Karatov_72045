@@ -172,7 +172,10 @@ bool Book:: operator!=(const Book& other)
 }
 Book& Book:: operator= (const Book& other)
 {
-	copy(other);
+	if (this != &other)
+	{
+		copy(other);
+	}
 	return *this;
 }
 std::ostream& operator<<(std::ostream& output, const Book& object)
@@ -194,17 +197,16 @@ std::ostream& operator<<(std::ostream& output, const Book& object)
 }
 void Book::copy(const Book& other)
 {
-	if (this != &other)
-	{
-		set_author(other.author);
-		set_genre(other.genre);
-		set_isbn(other.isbn);
-		set_keywords(other.keywords);
-		set_title(other.title);
-		set_description(other.description);
-		set_rating( other.rating);
-		set_yearOfPublishing(other.yearOfPublishing);
-	}
+	
+	set_author(other.author);
+	set_genre(other.genre);
+	set_isbn(other.isbn);
+	set_keywords(other.keywords);
+	set_title(other.title);
+	set_description(other.description);
+	set_rating( other.rating);
+	set_yearOfPublishing(other.yearOfPublishing);
+	
 	
 }
 void Book::destroy()

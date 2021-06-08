@@ -68,7 +68,10 @@ bool User:: operator!=(const User& other)
 }
 User& User:: operator=(const User& other)
 {
-	copy(other);
+	if (this != &other)
+	{
+		copy(other);
+	}
 	return *this;
 }
 
@@ -136,15 +139,11 @@ void User::destroy()
 }
 void User::copy(const User& other)
 {
-	if (this != &other)
-	{
-		username = new char[strlen(other.username) + 1];
-		strcpy_s(username, strlen(other.username) + 1, other.username);
-		password = new char[strlen(other.password) + 1];
-		strcpy_s(password, strlen(other.password) + 1, other.password);
-		isAdmin = other.isAdmin;
-	}
-	
+	username = new char[strlen(other.username) + 1];
+	strcpy_s(username, strlen(other.username) + 1, other.username);
+	password = new char[strlen(other.password) + 1];
+	strcpy_s(password, strlen(other.password) + 1, other.password);
+	isAdmin = other.isAdmin;
 }
 
 bool User::validatePassAndUsername(const char* str)

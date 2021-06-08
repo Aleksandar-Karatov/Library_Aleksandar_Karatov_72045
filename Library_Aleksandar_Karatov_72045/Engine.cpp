@@ -11,9 +11,10 @@ void Engine::Run() // used as a core for functionality
 	
 	while (commandInStrings[0].toLower() != "exit") // main menu
 	{
-
+		//users
 		if (commandInStrings[0].toLower() == "users" && commandInStrings.getSize() > 1)
 		{
+			//users add
 			if (commandInStrings[1].toLower() == "add" && currentUser.get_auth() == true && commandInStrings.getSize() == 2)
 			{
 				User temp;
@@ -256,6 +257,7 @@ void Engine::Run() // used as a core for functionality
 			//books all
 			if (commandInStrings[1].toLower() == "all" && currentUser.get_username() != nullptr && commandInStrings.getSize() == 2)
 			{
+				std::cout << std::endl;
 				for (size_t i = 0; i < vectorBooks.getSize(); i++)
 				{
 					std::cout << vectorBooks[i] << std::endl;;
@@ -278,10 +280,10 @@ void Engine::Run() // used as a core for functionality
 				{
 					if (commandInStrings[2] == vectorBooks[i].get_isbn())
 					{
-						std::cout << "Title: " << vectorBooks[i].get_title()  << std::endl <<
+						std::cout << std::endl << "Title: " << vectorBooks[i].get_title() << std::endl <<
 									"Author: " << vectorBooks[i].get_author() << std::endl <<
 									"Genre: "  << vectorBooks[i].get_genre()  << std::endl <<
-									"Rating: " << vectorBooks[i].get_rating() << "/10" << std::endl;
+									"Rating: " << vectorBooks[i].get_rating() << "/10" << std::endl << std::endl;
 						isFound = true;
 						break;
 					}
@@ -958,7 +960,7 @@ void Engine::sortBooks( const String command, const bool isAsc)
 	{
 		for (int i = temp.getSize() - 1; i >=0 ; i--)
 		{
-			std::cout << "|N: " << i + 1 << "| " << temp[i] << std::endl;
+			std::cout << "|N: " << temp.getSize() - i << "| " << temp[i] << std::endl;
 		}
 	}
 	

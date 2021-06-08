@@ -41,16 +41,15 @@ private:
 	size_t capacity;
 	void copy(const Vector<T>& other)
 	{
-		if (this != &other)
+		
+		size = other.size;
+		capacity = other.capacity;
+		data = new T[capacity];
+		for (size_t i = 0; i < size; i++)
 		{
-			size = other.size;
-			capacity = other.capacity;
-			data = new T[capacity];
-			for (size_t i = 0; i < size; i++)
-			{
-				data[i] = other.data[i];
-			}
+			data[i] = other.data[i];
 		}
+		
 	}
 	void resize()
 	{
@@ -67,10 +66,7 @@ private:
 		}
 
 	}
-	void destroy()
-	{
-		delete[] data;
-	}
+
 };
 template<typename T>
 Vector<T>::Vector(const Vector<T>& other)
@@ -101,7 +97,10 @@ Vector<T>::Vector(const T* Data)
 template<typename T>
 Vector<T>& Vector<T> :: operator= (const Vector<T>& other)
 {
-	copy(other);
+	if (this != &other)
+	{
+		copy(other);
+	}
 	return *this;
 }
 template <typename T>
